@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='bibfix',
-      version='0.1-dev',
+      version='0.1',
       description='Puts curly braces around acronyms in titles in '
                   'bibtex files.',
       author='Johannes Wienke',
