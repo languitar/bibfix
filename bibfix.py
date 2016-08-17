@@ -36,6 +36,7 @@ def main():
 
     parser = bibtexparser.bparser.BibTexParser()
     parser.ignore_nonstandard_types = False
+    parser.homogenise_fields = False
     with open(args.infile, encoding=args.encoding) as infile:
         database = bibtexparser.load(infile, parser=parser)
 
@@ -50,7 +51,6 @@ def main():
 
     acro_re = re.compile(r'(\w*[A-Z]\w*[A-Z]\w*)')
     for entry in database.entries:
-        # matches = acro_re.finditer(entry['title'])
         entry['title'] = acro_re.sub(r'{\1}', entry['title'])
 
     if args.outfile == '-':
