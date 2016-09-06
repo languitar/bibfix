@@ -24,6 +24,12 @@ def main():
              'Each line marks a single string to protect with curly braces')
 
     parser.add_argument(
+        '-a', '--abbrev',
+        action='store_true',
+        default=False,
+        help='Abbreviate common conference and journal title parts.')
+
+    parser.add_argument(
         'infile',
         metavar='INFILE',
         help='The bibtex file to process')
@@ -52,6 +58,31 @@ def main():
     acro_re = re.compile(r'(\w*[A-Z]\w*[A-Z]\w*)')
     for entry in database.entries:
         entry['title'] = acro_re.sub(r'{\1}', entry['title'])
+
+    conf_replacements = [
+        ('Proceedings of the', 'Proc.'),
+        ('Proceedings', 'Proc.'),
+        ('International Conference on', 'Int. Conf.'),
+        ('International', 'Int.'),
+        ('Conference', 'Conf.'),
+        ('Symposium', 'Symp.'),
+    ]
+
+    journal_replacements = [
+        ('International', 'Int.'),
+    ]
+
+    # abbreviation
+    if args.abbrev:
+        for entry in database.entries:
+            if entry['ENTRYTYPE'] == 'inproceedings':
+                for source, target in conf_replacements:
+                    entry['booktitle'] = entry['booktitle'].replace(
+                        source, target)
+            if entry['ENTRYTYPE'] == 'article':
+                for source, target in journal_replacements:
+                    entry['journal'] = entry['journal'].replace(
+                        source, target)
 
     if args.outfile == '-':
         bibtexparser.dump(database, sys.stdout)
